@@ -12,23 +12,51 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.ConfirmPassword;
+import com.mobsandgeeks.saripaar.annotation.Email;
+import com.mobsandgeeks.saripaar.annotation.NotEmpty;
+import com.mobsandgeeks.saripaar.annotation.Password;
+
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private static final String TAG = RegisterActivity.class.getCanonicalName();
     private static final int GALLERY_REQUEST_CODE = 1;
     private ImageView avatarImage;
+    public static String DATA_KEY = "DATA_KEY";
+    @NotEmpty
+    private EditText usernameInput;
+    @Email
+    private EditText emailInput;
+    @Password (min = 6, scheme = Password.Scheme.ALPHA_NUMERIC_MIXED_CASE_SYMBOLS)
+    private EditText passwordInput;
+    @ConfirmPassword
+    private EditText confirmPasswordInput;
+    private EditText homepageInput;
+    private EditText aboutInput;
+    private Uri imageUri;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         avatarImage = findViewById(R.id.image_profile);
+        usernameInput = findViewById(R.id.text_fullname);
+        emailInput = findViewById(R.id.text_email);
+        passwordInput = findViewById(R.id.text_password);
+        confirmPasswordInput = findViewById(R.id.text_confirm_password);
+        homepageInput = findViewById(R.id.text_homepage);
+        aboutInput = findViewById(R.id.text_about);
     }
 
     public void handleChangeAvatar(View view) {
@@ -45,7 +73,7 @@ public class RegisterActivity extends AppCompatActivity {
         if (requestCode == GALLERY_REQUEST_CODE){
             if (data != null){
                 try {
-                    Uri imageUri = data.getData();
+                    imageUri = data.getData();
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
                     avatarImage.setImageBitmap(bitmap);
                 }catch(IOException e){
@@ -56,8 +84,22 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+
     public void handleOk(View view) {
+
+        String username = usernameInput.getText().toString();
+        String email = emailInput.getText().toString();
+        String password = passwordInput.getText().toString();
+        String confirmPassword = confirmPasswordInput.getText().toString();
+        String homepage = homepageInput.getText().toString();
+        String about = aboutInput.getText().toString();
+        Uri path = imageUri.normalizeScheme();
+
+        UserData user = new UserData(username, email, password, confirmPassword, homepage, about, path);
         Intent intent = new Intent(this, ProfileActivity.class);
+        intent.putExtra(DATA_KEY, user);
         startActivity(intent);
     }
+
+
 }
