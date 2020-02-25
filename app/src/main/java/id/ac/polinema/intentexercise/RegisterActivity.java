@@ -33,13 +33,9 @@ public class RegisterActivity extends AppCompatActivity {
     private static final int GALLERY_REQUEST_CODE = 1;
     private ImageView avatarImage;
     public static String DATA_KEY = "DATA_KEY";
-    @NotEmpty
     private EditText usernameInput;
-    @Email
     private EditText emailInput;
-    @Password (min = 6, scheme = Password.Scheme.ALPHA_NUMERIC_MIXED_CASE_SYMBOLS)
     private EditText passwordInput;
-    @ConfirmPassword
     private EditText confirmPasswordInput;
     private EditText homepageInput;
     private EditText aboutInput;
@@ -93,12 +89,29 @@ public class RegisterActivity extends AppCompatActivity {
         String confirmPassword = confirmPasswordInput.getText().toString();
         String homepage = homepageInput.getText().toString();
         String about = aboutInput.getText().toString();
-        Uri path = imageUri.normalizeScheme();
+        Uri path = imageUri;
 
-        UserData user = new UserData(username, email, password, confirmPassword, homepage, about, path);
-        Intent intent = new Intent(this, ProfileActivity.class);
-        intent.putExtra(DATA_KEY, user);
-        startActivity(intent);
+        if (imageUri == null){
+            Toast.makeText(this, "Masukkan gambar terlebih dahulu", Toast.LENGTH_SHORT).show();
+        }
+        if (username.isEmpty()){
+            usernameInput.setError("Masukkan username terlebih dahulu");
+        } else if(email.isEmpty()){
+            emailInput.setError("Masukkan email terlebih dahulu");
+        } else if(password.isEmpty()){
+            passwordInput.setError("Masukkan password terlebih dahulu");
+        } else if(confirmPassword.isEmpty()){
+            confirmPasswordInput.setError("Pastikan password sama");
+        } else if(homepage.isEmpty()){
+            homepageInput.setError("Masukkan hompage terlebih dahulu");
+        } else if(about.isEmpty()){
+            aboutInput.setError("Masukkan about terlebih dahulu");
+        } else {
+            UserData user = new UserData(username, email, password, confirmPassword, homepage, about, path);
+            Intent intent = new Intent(this, ProfileActivity.class);
+            intent.putExtra(DATA_KEY, user);
+            startActivity(intent);
+        }
     }
 
 
